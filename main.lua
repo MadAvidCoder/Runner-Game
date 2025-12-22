@@ -106,3 +106,18 @@ function love.draw()
         love.graphics.print("Press SPACE to restart", love.graphics.getWidth() / 2 - 100, love.graphics.getHeight() / 2 + 10)
     end
 end
+
+function love.keypressed(key)
+    if key == "space" or key == "up" or key == "w" then
+        if gameOver then
+            restartGame()
+        elseif not player.isJumping then
+            player.isJumping = true
+            player.velocityY = jumpForce
+        end
+    end
+
+    if key == "escape" then 
+        love.event.quit()
+    end
+end
