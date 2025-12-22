@@ -138,3 +138,14 @@ function checkCollision(a, b)
            a.y < b.y + b.height and
            a.y + a.height > b.y
 end
+
+function restartGame()
+    gameOver = false
+    score = 0
+    obstacles = {}
+    spawnTimer = 0
+    gameSpeed = 300
+    player.y = ground.y - player.height + 1
+    player.isJumping = false
+    player.velocityY = 0
+end
