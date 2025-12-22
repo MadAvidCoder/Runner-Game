@@ -57,7 +57,7 @@ function love.update(dt)
     spawnTimer = spawnTimer + dt
     if spawnTimer >= spawnInterval then
         spawnTimer = 0
-        spawnInterval = math.random(10, 20) / 10
+        spawnInterval = math.random(8, 18) / 10
         spawnObstacle()
     end
 
@@ -123,10 +123,19 @@ function love.keypressed(key)
 end
 
 function spawnObstacle()
+    local rand = math.random()
+    local tall = false
+    local medium = false
+    if rand < 0.25 then
+        tall = true
+    elseif rand < 0.7 then 
+        medium = true
+    end
+
     local obstacle = {
         x = love.graphics.getWidth(),
-        width = 30,
-        height = 50,
+        width = tall and 42 or medium and 36 or 24,
+        height = tall and 70 or medium and 60 or 40,
     }
     obstacle.y = ground.y - obstacle.height + 1
     table.insert(obstacles, obstacle)
