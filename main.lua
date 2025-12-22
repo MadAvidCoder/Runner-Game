@@ -121,3 +121,20 @@ function love.keypressed(key)
         love.event.quit()
     end
 end
+
+function spawnObstacle()
+    local obstacle = {
+        x = love.graphics.getWidth(),
+        width = 30,
+        height = 50,
+    }
+    obstacle.y = ground.y - obstacle.height + 1
+    table.insert(obstacles, obstacle)
+end
+
+function checkCollision(a, b)
+    return a.x < b.x + b.width and
+           a.x + a.width > b.x and
+           a.y < b.y + b.height and
+           a.y + a.height > b.y
+end
