@@ -10,7 +10,7 @@ local ground = { y = 0, height = 40 }
 local obstacles = {}
 local spawnTimer = 0
 local spawnInterval = 1.5
-local gameSpeed = 300
+local gameSpeed = 400
 local score = 0
 local highScore = 0
 local gameOver = false
@@ -19,6 +19,46 @@ local jumpForce = -500
 
 local images = {}
 local dinoScale = 1
+
+local backgroundHue = 0
+
+local function hueToRGB(h)
+    local s = 0.87
+    local v = 0.68
+
+    local r, g, b 
+    
+    local i = math.floor(h * 6)
+    local f = h * 6 - i
+    local p = v * (1 - s)
+    local q = v * (1 - f * s)
+    local t = v * (1 - (1 - f) * s)
+
+    i = i % 6
+
+    if i == 0 then
+        r = v
+        g = t
+        b = p
+    elseif i == 1 then
+        r = q
+        g = v
+        b = p
+    elseif i == 2 then
+        r,g,b = p,v,t
+    elseif i == 3 then
+        r = p
+        g = q
+        b = v
+    elseif i == 4 then r, g, b = t, p, v
+    elseif i == 5 then
+        r = v
+        g = p
+        b = q
+    end
+
+    return r, g, b
+end
 
 function love.load()
     love.window.setTitle("Haxmas Day 10!")
@@ -41,7 +81,9 @@ function love.update(dt)
     if gameOver then return end
     
     score = score + dt * 10
-    gameSpeed = 300 + score * 0.5
+    gameSpeed = 400 + score * 0.5
+    
+    backgroundHue = (backgroundHue + dt * 0.1) % 1
 
     if player.isJumping then
         player.velocityY = player.velocityY + gravity * dt
@@ -79,7 +121,8 @@ function love.update(dt)
 end
 
 function love.draw()
-    love.graphics.clear(1, 1, 1)
+    local r, g, b = hueToRGB(backgroundHue)
+    love.graphics.clear(r, g, b)
 
     love.graphics.setColor(0, 0, 0)
     love.graphics.line(0, ground.y, love.graphics.getWidth(), ground.y)
@@ -153,7 +196,7 @@ function restartGame()
     score = 0
     obstacles = {}
     spawnTimer = 0
-    gameSpeed = 300
+    gameSpeed = 400
     player.y = ground.y - player.height + 1
     player.isJumping = false
     player.velocityY = 0
