@@ -23,6 +23,8 @@ local dinoScale = 1
 local backgroundHue = 0
 
 local particleSystem
+local confettiSystem
+local newHigh = false
 
 local function hueToRGB(h)
     local s = 0.87
@@ -79,10 +81,26 @@ function love.load()
     love.graphics.setFont(love.graphics.newFont(20))
 
     local particleImage = love.graphics.newImage("assets/particle.png")
+    
     particleSystem = love.graphics.newParticleSystem(particleImage, 500)
+
+    confettiSystem = love.graphics.newParticleSystem(particleImage, 1000)
+    confettiSystem:setParticleLifetime(2, 4)
+    confettiSystem:setSizes(2, 3, 4)
+    confettiSystem:setSpin(0, math.pi * 4)
+    confettiSystem:setLinearAcceleration(-50, 100, 50, 300)
+    confettiSystem:setEmissionArea("uniform", love.graphics.getWidth(), 0)
+end
+
+function confettiColor()
+    local r = math.random()
+    local g = math.random()
+    local b = math.random()
+    confettiSystem:setColors(r, g, b, 1, r, g, b, 1)
 end
 
 function love.update(dt)
+    confettiSystem:update(dt)
     if gameOver then return end
     
     score = score + dt * 10
@@ -129,6 +147,10 @@ function love.update(dt)
             gameOver = true
             if score > highScore then 
                 highScore = score
+                newHigh = true
+                confettiSystem:setPosition(love.graphics.getWidth()/2, 0)
+                confettiColor()
+                confettiSystem:emit(200)
             end
         end
     end
@@ -161,9 +183,14 @@ function love.draw()
         love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
 
         love.graphics.setColor(1, 1, 1)
+        if newHigh then
+            love.graphics.print("NEW HIGH SCORE!", love.graphics.getWidth() / 2 - 80, love.graphics.getHeight() / 2 - 60)
+        end
         love.graphics.print("GAME OVER", love.graphics.getWidth() / 2 - 60, love.graphics.getHeight() / 2 - 30)
         love.graphics.print("Press SPACE to restart", love.graphics.getWidth() / 2 - 100, love.graphics.getHeight() / 2 + 10)
     end
+
+    love.graphics.draw(confettiSystem)
 end
 
 function love.keypressed(key)
@@ -216,4 +243,5 @@ function restartGame()
     player.y = ground.y - player.height + 1
     player.isJumping = false
     player.velocityY = 0
+    newHigh = false
 end
