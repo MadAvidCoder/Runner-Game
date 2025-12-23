@@ -22,6 +22,8 @@ local dinoScale = 1
 
 local backgroundHue = 0
 
+local particleSystem
+
 local function hueToRGB(h)
     local s = 0.87
     local v = 0.68
@@ -75,6 +77,9 @@ function love.load()
     player.y = ground.y - player.height + 1
 
     love.graphics.setFont(love.graphics.newFont(20))
+
+    local particleImage = love.graphics.newImage("assets/particle.png")
+    particleSystem = love.graphics.newParticleSystem(particleImage, 500)
 end
 
 function love.update(dt)
@@ -93,8 +98,17 @@ function love.update(dt)
             player.y = ground.y - player.height + 1
             player.isJumping = false
             player.velocityY = 0
+
+            particleSystem:setPosition(player.x + player.width/2, player.y + player.height)
+            particleSystem:setParticleLifetime(0.3, 0.5)
+            particleSystem:setLinearAcceleration(-120, -60, 120, -150)
+            particleSystem:setLinearDamping(1)
+            particleSystem:setEmissionArea("ellipse", player.width/2, 5)
+            particleSystem:emit(50)
         end
     end
+
+    particleSystem:update(dt)
 
     spawnTimer = spawnTimer + dt
     if spawnTimer >= spawnInterval then
@@ -126,6 +140,8 @@ function love.draw()
 
     love.graphics.setColor(0, 0, 0)
     love.graphics.line(0, ground.y, love.graphics.getWidth(), ground.y)
+
+    love.graphics.draw(particleSystem)
 
     love.graphics.setColor(1, 1, 1)
     love.graphics.draw(images.dino, player.x, player.y, 0, dinoScale, dinoScale)
